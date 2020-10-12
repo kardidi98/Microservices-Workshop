@@ -2,18 +2,18 @@ package com.catalog.Models;
 
 public class Movie {
 
-	private String id;
+	private Long id;
 	private String name;
-	public Movie(String id, String name) {
+	public Movie(Long id, String name) {
 		this.id = id;
 		this.name = name;
 	}
 	public Movie() {
 	}
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getName() {

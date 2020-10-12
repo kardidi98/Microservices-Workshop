@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,8 @@ import com.catalog.Models.Rating;
 import com.catalog.Models.UserRatings;
 
 @RestController
-@RequestMapping("/catalog")
+@RequestMapping("catalogs")
+@CrossOrigin(origins="http://localhost:3000",allowedHeaders = "*")
 public class CatalogResourceController {
 	
 	@Autowired
@@ -29,22 +31,24 @@ public class CatalogResourceController {
 	private WebClient.Builder webClientBuilder;
 	
 	@GetMapping("/{userId}")
-	public List<Catalog> getListCatalogItem(@PathVariable("userId") String userId){
+	public List<Catalog> getListCatalogItem(@PathVariable("userId") Long userId){
 		
 		//RestTemplate restTemplate = new RestTemplate();
 		
 		
-		UserRatings ratings= restTemplate.getForObject("http://rating-service/rating/user/"+userId, UserRatings.class);
+		UserRatings ratings= restTemplate.getForObject("http://rating-service/ratings/user/"+userId, UserRatings.class);
 		
 		/*List<Rating> ratings = Arrays.asList(
 				new Rating("1", 5),
 				new Rating("2", 3)
 		);*/
 		
+		
+		
 		return ratings.getUserRatings().stream().map(rating -> {
-			Movie movie = restTemplate.getForObject("http://info-service/info/"+rating.getMovieId(), Movie.class);
-			
-			return new Catalog(movie.getName(), "Desc", rating.getRating());
+			Movie movie = restTemplate.getForObject("http://info-service/movies/"+rating.getMovieId(), Movie.class);
+
+			return new Catalog((long) (ratings.getUserRatings().indexOf(rating)+1),movie.getName(), "Desc", rating.getRating());
 		}).collect(Collectors.toList());
 		
 		
